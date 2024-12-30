@@ -1,0 +1,2286 @@
+{
+  "address": "HASmJt3YnfzqkEnR93acGjT1pbVdoNB21zQdpnQqsXU3",
+  "metadata": {
+    "name": "mythic_metadata",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Metadata program"
+  },
+  "instructions": [
+    {
+      "name": "append_metadata_collection",
+      "discriminator": [
+        163,
+        163,
+        157,
+        88,
+        255,
+        177,
+        52,
+        176
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "issuing_authority",
+          "signer": true,
+          "relations": [
+            "metadata"
+          ]
+        },
+        {
+          "name": "metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key"
+              },
+              {
+                "kind": "account",
+                "path": "issuing_authority"
+              },
+              {
+                "kind": "account",
+                "path": "metadata.subject",
+                "account": "Metadata"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collection_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collection_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "AppendMetadataCollectionArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "append_metadata_item",
+      "discriminator": [
+        75,
+        203,
+        140,
+        50,
+        250,
+        170,
+        232,
+        4
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "issuing_authority",
+          "signer": true,
+          "relations": [
+            "metadata"
+          ]
+        },
+        {
+          "name": "metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key"
+              },
+              {
+                "kind": "account",
+                "path": "issuing_authority"
+              },
+              {
+                "kind": "account",
+                "path": "metadata.subject",
+                "account": "Metadata"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collection_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collection_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "item_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "item_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "AppendMetadataItemArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "append_metadata_items",
+      "discriminator": [
+        168,
+        131,
+        179,
+        9,
+        232,
+        98,
+        61,
+        250
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "issuing_authority",
+          "signer": true,
+          "relations": [
+            "metadata"
+          ]
+        },
+        {
+          "name": "metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key"
+              },
+              {
+                "kind": "account",
+                "path": "issuing_authority"
+              },
+              {
+                "kind": "account",
+                "path": "metadata.subject",
+                "account": "Metadata"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collection_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collection_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "AppendMetadataItemsArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_metadata",
+      "discriminator": [
+        30,
+        35,
+        117,
+        134,
+        196,
+        139,
+        44,
+        25
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "issuing_authority",
+          "signer": true
+        },
+        {
+          "name": "metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key"
+              },
+              {
+                "kind": "account",
+                "path": "issuing_authority"
+              },
+              {
+                "kind": "arg",
+                "path": "args.subject"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "CreateMetadataArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_metadata_key",
+      "discriminator": [
+        97,
+        100,
+        204,
+        80,
+        145,
+        247,
+        25,
+        137
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "namespace_authority",
+          "signer": true
+        },
+        {
+          "name": "metadata_key",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "args.id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "CreateMetadataKeyArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "remove_metadata_collection",
+      "discriminator": [
+        150,
+        158,
+        202,
+        131,
+        20,
+        109,
+        210,
+        199
+      ],
+      "accounts": [
+        {
+          "name": "issuing_authority",
+          "signer": true,
+          "relations": [
+            "metadata"
+          ]
+        },
+        {
+          "name": "metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key"
+              },
+              {
+                "kind": "account",
+                "path": "issuing_authority"
+              },
+              {
+                "kind": "account",
+                "path": "metadata.subject",
+                "account": "Metadata"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collection_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collection_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "remove_metadata_item",
+      "discriminator": [
+        210,
+        12,
+        49,
+        1,
+        201,
+        243,
+        253,
+        101
+      ],
+      "accounts": [
+        {
+          "name": "issuing_authority",
+          "signer": true,
+          "relations": [
+            "metadata"
+          ]
+        },
+        {
+          "name": "metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key"
+              },
+              {
+                "kind": "account",
+                "path": "issuing_authority"
+              },
+              {
+                "kind": "account",
+                "path": "metadata.subject",
+                "account": "Metadata"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collection_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collection_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "item_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "item_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "revoke_collection_update_authority",
+      "discriminator": [
+        202,
+        54,
+        83,
+        211,
+        193,
+        251,
+        218,
+        206
+      ],
+      "accounts": [
+        {
+          "name": "issuing_authority",
+          "signer": true,
+          "relations": [
+            "metadata"
+          ]
+        },
+        {
+          "name": "metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key"
+              },
+              {
+                "kind": "account",
+                "path": "issuing_authority"
+              },
+              {
+                "kind": "account",
+                "path": "metadata.subject",
+                "account": "Metadata"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collection_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collection_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "set_collection_update_authority",
+      "discriminator": [
+        8,
+        139,
+        31,
+        243,
+        59,
+        214,
+        80,
+        110
+      ],
+      "accounts": [
+        {
+          "name": "issuing_authority",
+          "signer": true,
+          "relations": [
+            "metadata"
+          ]
+        },
+        {
+          "name": "metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key"
+              },
+              {
+                "kind": "account",
+                "path": "issuing_authority"
+              },
+              {
+                "kind": "account",
+                "path": "metadata.subject",
+                "account": "Metadata"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collection_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collection_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "SetCollectionUpdateAuthorityArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_metadata_item",
+      "discriminator": [
+        247,
+        110,
+        128,
+        152,
+        153,
+        217,
+        139,
+        170
+      ],
+      "accounts": [
+        {
+          "name": "update_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "metadata",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key"
+              },
+              {
+                "kind": "account",
+                "path": "metadata.issuing_authority",
+                "account": "Metadata"
+              },
+              {
+                "kind": "account",
+                "path": "metadata.subject",
+                "account": "Metadata"
+              }
+            ]
+          }
+        },
+        {
+          "name": "metadata_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "metadata_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collection_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "collection_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "item_metadata_key",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  121,
+                  116,
+                  104,
+                  105,
+                  99,
+                  95,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "item_metadata_key.id",
+                "account": "MetadataKey"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "UpdateMetadataItemArgs"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Metadata",
+      "discriminator": [
+        72,
+        11,
+        121,
+        26,
+        111,
+        181,
+        85,
+        93
+      ]
+    },
+    {
+      "name": "MetadataKey",
+      "discriminator": [
+        108,
+        103,
+        195,
+        88,
+        73,
+        100,
+        213,
+        199
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "CounterIdReachedMax",
+      "msg": "Cannot increment ID"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidAccountOwner",
+      "msg": "Invalid account owner"
+    },
+    {
+      "code": 6002,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
+    },
+    {
+      "code": 6003,
+      "name": "ImmutableMetadata",
+      "msg": "Metadata immutable"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidMetadataKey",
+      "msg": "Invalid MetadataKey"
+    },
+    {
+      "code": 6005,
+      "name": "MetadataCollectionFull",
+      "msg": "Metadata collection is full"
+    },
+    {
+      "code": 6006,
+      "name": "MetadataCollectionAlreadyExists",
+      "msg": "Metadata collection already exists"
+    },
+    {
+      "code": 6007,
+      "name": "MetadataCollectionNonExistent",
+      "msg": "Metadata collection does not exist"
+    },
+    {
+      "code": 6008,
+      "name": "MetadataItemFull",
+      "msg": "Metadata item is full"
+    },
+    {
+      "code": 6009,
+      "name": "MetadataItemAlreadyExists",
+      "msg": "Metadata item already exists"
+    },
+    {
+      "code": 6010,
+      "name": "MetadataItemNonExistent",
+      "msg": "Metadata item does not exist"
+    },
+    {
+      "code": 6011,
+      "name": "MetadataItemValueLenExceeded",
+      "msg": "Metadata item value len exceeded"
+    }
+  ],
+  "types": [
+    {
+      "name": "AppendMetadataCollectionArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "update_authority",
+            "type": {
+              "option": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AppendMetadataItemArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": "bytes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AppendMetadataItemsArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": {
+              "vec": "bytes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateMetadataArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "subject",
+            "type": "pubkey"
+          },
+          {
+            "name": "update_authority",
+            "type": {
+              "option": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateMetadataKeyArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "label",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "content_type",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Metadata",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "subject",
+            "docs": [
+              "The subject described by the metadata (e.g. a DAO, NFT, a program etc.)"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "metadata_key_id",
+            "docs": [
+              "The Metadata Key  Id"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "issuing_authority",
+            "docs": [
+              "The authority which issued (created) the Metadata account and owns it",
+              "Note: The authority is embedded in the PDA seeds and cannot be changed",
+              "If a new authority is required then a new Metadata account must be created",
+              "",
+              "Metadata can be self issued by the subject or issued by a third party",
+              "For example a DAO can issue metadata about itself using the DAO's authority",
+              "Or external authority can issue claims, certifications etc. about the DAO",
+              "",
+              "TODO:",
+              "- Should it also be allowed to close the account?"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "update_slot",
+            "docs": [
+              "The slot when the collection was last updated",
+              "The collection update slot is max(update_slot) for all its metadata items"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "update_authority",
+            "docs": [
+              "The default update authority for all the collections",
+              "Note: The authority can be overridden at the collection level",
+              "Setting the authority to None makes the Metadata immutable"
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "items",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "MetadataItem"
+                }
+              }
+            }
+          },
+          {
+            "name": "collections",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "MetadataCollection"
+                }
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MetadataCollection",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "metadata_key_id",
+            "docs": [
+              "The Metadata Key  Id"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "update_slot",
+            "docs": [
+              "The slot when the collection was last updated",
+              "The collection update slot is max(update_slot) for all its metadata items"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "update_authority",
+            "docs": [
+              "The authority that can update the collection metadata items",
+              "Separate update instructions can be invoked to add/revoke specific collection's update_authority",
+              "If the collection level update authority is None then parent Metadata update_authority is used"
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "items",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "MetadataItem"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MetadataItem",
+      "docs": [
+        "MetadataItem defines a single metadata item identified by its MetadataKey"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "metadata_key_id",
+            "docs": [
+              "The Metadata Key Id"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "update_slot",
+            "docs": [
+              "The slot when the value was last updated"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "value",
+            "docs": [
+              "Serialized metadata item value"
+            ],
+            "type": "bytes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MetadataKey",
+      "docs": [
+        "MetadataKey account defines a single metadata value"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "docs": [
+              "Id"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "namespace_authority",
+            "docs": [
+              "Authority of the MetadataKey namespace",
+              "It allows authorities to create unique namespaces for metadata keys"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "docs": [
+              "Name of the metadata value represented by the MetadataKey"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "label",
+            "docs": [
+              "User friendly label of the value represented by the MetadataKey"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "docs": [
+              "Description of the value represented by the MetadataKey"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "content_type",
+            "docs": [
+              "The type of the metadata described by the key",
+              "e.g. string, number, image, metadata, metadata-collection etc."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetCollectionUpdateAuthorityArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "new_update_authority",
+            "type": {
+              "option": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateMetadataItemArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "new_value",
+            "type": "bytes"
+          }
+        ]
+      }
+    }
+  ]
+}
