@@ -4,29 +4,14 @@ import {
   devnet, 
   pipe, 
   setTransactionMessageLifetimeUsingBlockhash, 
-  appendTransactionMessageInstructions, 
-  sendAndConfirmTransactionFactory,
-  createSolanaRpcSubscriptions,
-  signTransactionMessageWithSigners,
   setTransactionMessageFeePayerSigner,
-  TransactionSigner,
   signAndSendTransactionMessageWithSigners,
-  getBase58Decoder,
-  assertIsTransactionMessageWithSingleSendingSigner,
-  getBase58Encoder,
-  getBase64EncodedWireTransaction,
-  addSignersToTransactionMessage,
   appendTransactionMessageInstruction,
-  TransactionModifyingSigner,
-  compileTransaction,
-  Transaction,
-  sendTransactionWithoutConfirmingFactory,
-  TransactionSendingSigner
+  TransactionSendingSigner,
+  appendTransactionMessageInstructions
 } from "@solana/web3.js";
 import { TransactionInstruction } from "solana-web3js-v1";
 import { web1IxsToWeb2Ixs } from "./get-instructions";
-import { UiWalletAccount } from "@wallet-standard/react";
-import { useWalletAccountTransactionSendingSigner } from "@solana/react";
 import { PageState } from "../branding-form";
 
 export default async function broadcastTransaction(
@@ -37,23 +22,30 @@ export default async function broadcastTransaction(
   handleProceedPage: (s: PageState) => void
 ) {
   const rpc = createSolanaRpc(devnet(endpoint))
-  const rpcSubscriptions = createSolanaRpcSubscriptions(devnet(endpoint.replace('https', 'wss')))
   const v2Instructions = web1IxsToWeb2Ixs(instructions)
 
   let counter = 1
 
-  for (const ix of v2Instructions) {
+  for (let i = 0; i < v2Instructions.length-1; i++) {
     setTxExecuted(counter)
     const { value: latestBlockhash } = await rpc
     .getLatestBlockhash({ commitment: "confirmed" })
     .send();
 
-    const message = pipe(
-      createTransactionMessage({version: 0}),
-      m => setTransactionMessageFeePayerSigner(signer, m),
-      m => setTransactionMessageLifetimeUsingBlockhash(latestBlockhash, m),
-      m => appendTransactionMessageInstruction(ix, m)
-    )
+    const message = 
+      i === v2Instructions.length - 2 ?
+        pipe(
+          createTransactionMessage({version: 0}),
+          m => setTransactionMessageFeePayerSigner(signer, m),
+          m => setTransactionMessageLifetimeUsingBlockhash(latestBlockhash, m),
+          m => appendTransactionMessageInstructions(v2Instructions.slice(i,i+2), m)
+        ) :
+        pipe(
+          createTransactionMessage({version: 0}),
+          m => setTransactionMessageFeePayerSigner(signer, m),
+          m => setTransactionMessageLifetimeUsingBlockhash(latestBlockhash, m),
+          m => appendTransactionMessageInstruction(v2Instructions[i], m)
+        )
 
     try {
       const signedTransaction = await signAndSendTransactionMessageWithSigners(message)

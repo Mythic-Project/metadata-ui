@@ -10,8 +10,7 @@ import { useGetRealmData } from "./useRealm"
 import broadcastTransaction from "../rpc/send-transaction"
 import { TransactionSendingSigner } from "@solana/web3.js"
 import {SplGovernance} from "governance-idl-sdk"
-import { PublicKey, Keypair } from "solana-web3js-v1"
-import { approvalRealmTreasury } from "../constants"
+import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL } from "solana-web3js-v1"
 import { useGetMetadataKeys } from "./useMetadataKeys"
 
 export function useCreateMetadata(
@@ -39,7 +38,7 @@ export function useCreateMetadata(
         throw new Error("Unable to find the realm.")
       }
 
-      if (!realmData.result?.authority) {
+      if (!realmData.result?.authority || !realmData.governance) {
         throw new Error("This DAO does not have any authority.")
       }
 
@@ -59,7 +58,7 @@ export function useCreateMetadata(
         realmData.result.communityMint
 
       // Fetch Governance account (it is assumed that the realm authority is the governance address)
-      const governanceAccount = await splGovernance.getGovernanceAccountByPubkey(realmData.result.authority)
+      const governanceAccount = realmData.governance
       
       // Fetch Realm Config account to check if plugin is used
       const realmConfigAccount = await splGovernance.getRealmConfigByRealm(realmData.result.publicKey)
@@ -294,7 +293,13 @@ export function useCreateMetadata(
         selectedTokenOwnerRecord
       )
 
-      instructions.push(signOffProposalIx)
+      const transferSolToDaoIx = SystemProgram.transfer({
+        fromPubkey: walletAddress,
+        toPubkey: proposerTreasuryAccount,
+        lamports: 0.01 * LAMPORTS_PER_SOL
+      })
+
+      instructions.push(signOffProposalIx, transferSolToDaoIx)
       // const approvalDaoProposalAddress = splGovernance.pda.proposalAccount({
       //     governanceAccount: approvalRealmGovernance,
       //     governingTokenMint: approvalRealmMint,
@@ -335,7 +340,7 @@ export function useCreateMetadata(
       //   instructions.push(innerIx)
       // }
 
-      setTotalTxs(instructions.length)
+      setTotalTxs(instructions.length - 1)
       await broadcastTransaction(
         instructions,
         connection.rpcEndpoint,

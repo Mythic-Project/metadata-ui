@@ -8,6 +8,7 @@ import { UiWalletAccount } from "@wallet-standard/react"
 import { useWalletAccountTransactionSendingSigner, useWalletAccountTransactionSigner } from "@solana/react"
 import clsx from "clsx"
 import Modal from 'react-modal';
+import { useGetRealmData } from "../hooks/useRealm"
 
 export default function ReviewDetails(
   {realmAddress, metadata, wallet, connection, handleProceedPage}: 
@@ -32,6 +33,7 @@ export default function ReviewDetails(
 
   const client = MetadataClient(connection as Connection)
   const signer = useWalletAccountTransactionSendingSigner(wallet, 'solana:devnet')
+  const realmData = useGetRealmData(realmAddress).data
   const [isCouncil, setIsCouncil] = useState(false)
   const [txExecuted, setTxExecuted] = useState(0)
   const [totalTxs, setTotalTxs] = useState(0)
@@ -73,29 +75,34 @@ export default function ReviewDetails(
       <div className="mt-2">
         <div className="mb-8">
           <h3 className="text-sm font-semibold mb-4">Choose the proposal type</h3>
-          <div 
-            className="inline-block p-4 border-[1px] border-[#222222] rounded-lg bg-[#141414]"
-            onClick={() => setIsCouncil(false)}
-          >
-            <input 
-              type="radio" id="community_option" name="proposal_type" value="Community"
-              onChange={() => setIsCouncil(false)} 
-              checked={!isCouncil}
-            />
-            <label htmlFor="community_option" className="p-2">Community</label>
-          </div>
-          <div 
-            className="inline-block p-4 border-[1px] border-[#222222] rounded-lg bg-[#141414] ml-4"
-            onClick={() => setIsCouncil(true)}
-          >
-            <input
-              type="radio" id="council_option" name="proposal_type" value="Council" 
-              onChange={() => setIsCouncil(true)} 
-              checked={isCouncil}
-            />
-            <label htmlFor="council_option" className="p-2">Council</label>
-          </div>
-          
+          {
+            !realmData?.governance?.config.communityVoteThreshold.disabled &&
+            <div 
+              className="inline-block p-4 border-[1px] border-[#222222] rounded-lg bg-[#141414]"
+              onClick={() => setIsCouncil(false)}
+            >
+              <input 
+                type="radio" id="community_option" name="proposal_type" value="Community"
+                onChange={() => setIsCouncil(false)} 
+                checked={!isCouncil}
+              />
+              <label htmlFor="community_option" className="p-2">Community</label>
+            </div>
+          }
+          {
+            !realmData?.governance?.config.councilVoteThreshold.disabled &&
+            <div 
+              className="inline-block p-4 border-[1px] border-[#222222] rounded-lg bg-[#141414] ml-4"
+              onClick={() => setIsCouncil(true)}
+            >
+              <input
+                type="radio" id="council_option" name="proposal_type" value="Council" 
+                onChange={() => setIsCouncil(true)} 
+                checked={isCouncil}
+              />
+              <label htmlFor="council_option" className="p-2">Council</label>
+            </div>
+          }
         </div>
         <button 
           className={clsx({
@@ -108,6 +115,9 @@ export default function ReviewDetails(
         >
           {createMetadataPending ? 'Sending Tx' : 'Create Metadata'}
         </button>
+        <p className="text-xs text-[#727272] mt-4">
+          Make sure you have at least 0.01 SOL in your wallet.
+        </p>
         {createMetadataFailed && createMetadataError ?
           <div className="text-sm text-red-500 mt-4">
             {createMetadataError.message}

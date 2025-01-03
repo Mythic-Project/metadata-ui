@@ -1,4 +1,4 @@
-import { SplGovernance } from "governance-idl-sdk";
+import { GovernanceAccount, SplGovernance } from "governance-idl-sdk";
 import { Connection, PublicKey } from "solana-web3js-v1";
 import { useSolanaWallet } from "../providers/wallet-provider";
 import { useQuery } from "@tanstack/react-query";
@@ -24,10 +24,15 @@ export function useGetRealmData(realmKey: string | null) {
         const realmAddress = new PublicKey(realmKey)
         error = 2  
         const realmData = await splGovernance.getRealmByPubkey(realmAddress)
+        let governance: GovernanceAccount | null = null
+        if (realmData.authority) {
+          governance = await splGovernance.getGovernanceAccountByPubkey(realmData.authority)
+        }
         error = 3
         console.log("fetched realm data")
         return {
           result: realmData,
+          governance,
           error
         }
       } catch(e) {
