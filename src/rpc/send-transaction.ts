@@ -1,14 +1,14 @@
 import { 
   createTransactionMessage,
   createSolanaRpc, 
-  devnet, 
   pipe, 
   setTransactionMessageLifetimeUsingBlockhash, 
   setTransactionMessageFeePayerSigner,
   signAndSendTransactionMessageWithSigners,
   appendTransactionMessageInstruction,
   TransactionSendingSigner,
-  appendTransactionMessageInstructions
+  appendTransactionMessageInstructions,
+  mainnet
 } from "@solana/web3.js";
 import { TransactionInstruction } from "solana-web3js-v1";
 import { web1IxsToWeb2Ixs } from "./get-instructions";
@@ -21,7 +21,7 @@ export default async function broadcastTransaction(
   setTxExecuted: (n: number) => void,
   handleProceedPage: (s: PageState) => void
 ) {
-  const rpc = createSolanaRpc(devnet(endpoint))
+  const rpc = createSolanaRpc(mainnet(endpoint))
   const v2Instructions = web1IxsToWeb2Ixs(instructions)
 
   let counter = 1

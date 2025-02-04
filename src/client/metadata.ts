@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/mythic_metadata.json`.
  */
 export type MythicMetadata = {
-  "address": "HASmJt3YnfzqkEnR93acGjT1pbVdoNB21zQdpnQqsXU3",
+  "address": "metaThtkusoWYDvHBFXfvc93Z3d8iBeDZ4DVyq8SYVR",
   "metadata": {
     "name": "mythicMetadata",
     "version": "0.1.0",

@@ -32,7 +32,7 @@ export default function ReviewDetails(
   }
 
   const client = MetadataClient(connection as Connection)
-  const signer = useWalletAccountTransactionSendingSigner(wallet, 'solana:devnet')
+  const signer = useWalletAccountTransactionSendingSigner(wallet, 'solana:mainnet')
   const realmData = useGetRealmData(realmAddress).data
   const [isCouncil, setIsCouncil] = useState(false)
   const [txExecuted, setTxExecuted] = useState(0)

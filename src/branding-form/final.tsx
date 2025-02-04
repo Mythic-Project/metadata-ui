@@ -9,7 +9,7 @@ export default function FinalContent({realmAddress}: {realmAddress: string}) {
       <p className="text-[#727272] text-sm font-medium">
         Please visit your DAO and approve the proposal to reflect the new changes.
       </p>
-      <a href={`https://app.realms.today/dao/${realmAddress}?cluster=devnet`}>
+      <a href={`https://app.realms.today/dao/${realmAddress}`}>
         <button className="bg-[#793AFF] rounded-md px-4 py-3 text-sm font-semibold mt-4">
           Go to the DAO
         </button>

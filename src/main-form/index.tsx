@@ -16,6 +16,7 @@ export default function MainForm(
   const [errorMsg, setError] = useState("");
   const realm = useGetRealmData(realmAddress).data
   const metadata = useGetMetadata(realmAddress).data
+  const undefinedMetadata = metadata === undefined
   const metadataItems = metadata ? Object.entries(metadata).filter(t => !!t[1]) : null
   const items: [string, any][] = []
 
@@ -29,7 +30,6 @@ export default function MainForm(
     }
   }
   
-
   const [wallet] = useSolanaWallet()
 
   const handleRealmChange = (e: string) => {
@@ -77,7 +77,7 @@ export default function MainForm(
                  <div className="text-white font-semibold text-sm">{splitKey(item[0])}</div>
                  <div className="text-sm text-[#727272]">{
                    item[0].includes('Image') ? 
-                   <img src={item[1]} /> :
+                   <img src={item[1]} alt="metadata" /> :
                    item[1]
                  }</div>
                </div> :
@@ -99,7 +99,7 @@ export default function MainForm(
                   realm?.error === 1 ?
                     "The entered public key is invalid, kindly recheck and provide the correct Realm." :
                   realm?.error === 2 ?
-                    "No realm exists for the provided publick key, kindly recheck." :
+                    "No realm exists for the provided public key, kindly recheck." :
                   realm?.error === 3 ?
                     "The Realm does not have any metadata. Kindly proceed below to add the metadata" :
                     ""
@@ -107,8 +107,9 @@ export default function MainForm(
               </div>
               <div className="mt-8 w-full justify-center flex md:justify-end">
                 <button 
-                  className="bg-[#793AFF] rounded-md px-4 py-3 text-sm font-semibold"
+                  className={`${undefinedMetadata ? "bg-gray-500" : "bg-[#793AFF]"} rounded-md px-4 py-3 text-sm font-semibold`}
                   onClick={handleCreate}
+                  disabled={undefinedMetadata}
                 >
                   Create Metadata
                 </button>
