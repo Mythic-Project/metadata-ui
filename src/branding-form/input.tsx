@@ -4,10 +4,12 @@ import React from "react"
 const categories = ['defi', 'social', 'web3', 'daotools', 'nft', 'gaming', 'legal', 'other']
 
 export function InputItem(
-  {label, type, placeholder, onChange}: 
+  {label, type, defaultValue, maxLength, placeholder, onChange}: 
   {
     label: string,
     type: 'input' | 'textarea' | 'file' | 'dropdown',
+    defaultValue?: string,
+    maxLength?: number,
     placeholder?: string,
     onChange?: (s: any) => void
   }
@@ -22,6 +24,8 @@ export function InputItem(
             className="bg-[#141414] w-full mt-1 px-2 py-1 border-[1px] border-[#222222] rounded-lg placeholder:text-sm
             placeholder:text-[#727272]"
             onChange={onChange ? e => onChange(e.target.value) : undefined}
+            maxLength={maxLength}
+            defaultValue={defaultValue}
           /> :
         type === 'textarea' ?
           <textarea 
@@ -29,6 +33,8 @@ export function InputItem(
             className="bg-[#141414] w-full mt-1 px-2 py-1 border-[1px] border-[#222222] rounded-lg placeholder:text-sm
             placeholder:text-[#727272]" 
             onChange={onChange ? e => onChange(e.target.value) : undefined}
+            maxLength={maxLength}
+            defaultValue={defaultValue}
           /> :
         type === 'file' ?
           <div className="relative p-6 border-[1px] border-[#222222] bg-[#141414] rounded-lg mt-1">
@@ -45,13 +51,16 @@ export function InputItem(
             border-[1px] border-[#222222] rounded-lg my-1" 
             // onChange={(e) => handleChange('council', e.target.value === "true" ? true : false)}
             onChange={onChange ? e => onChange(e.target.value) : undefined}
-            defaultValue={"true"}>
+            defaultValue={defaultValue ? defaultValue : "true"}
+          >
             {categories.map(category => (
               <option value={category} className="" key={category}>{category}</option>
             ))}
           </select>
       }
-      
+      {maxLength ? <p className="float-right text-sm text-gray-200 mt-2">
+        Max characters: {maxLength}</p> 
+      : null}
     </div>
   )
 }

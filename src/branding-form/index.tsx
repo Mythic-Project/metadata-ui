@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useGetRealmData } from "../hooks/useRealm";
 import { ChevronLeft } from "lucide-react";
-import { InputItem } from "./input";
 import clsx from "clsx"
 import BrandingDetails from "./branding";
 import SocialsDetails from "./socials";
@@ -9,6 +8,7 @@ import ReviewDetails from "./review";
 import { useSolanaWallet } from "../providers/wallet-provider";
 import { useGetMetadataKeys } from "../hooks/useMetadataKeys";
 import FinalContent from "./final";
+import { useGetMetadata } from "../hooks/useMetadata";
 
 export enum PageState {
   Branding,
@@ -49,6 +49,7 @@ export default function BrandingForm({realmAddress}: {realmAddress: string}) {
 
   const realm = useGetRealmData(realmAddress).data
   const metadataKeys = useGetMetadataKeys().data
+  const existingMetadata = useGetMetadata(realmAddress).data
   const [errorMsg, setErrorMsg] = useState("")
   const wallet = useSolanaWallet()
 
@@ -60,16 +61,9 @@ export default function BrandingForm({realmAddress}: {realmAddress: string}) {
   }
 
   function handleProceedPage(newPage: PageState) {
-    const {displayName} = metadata
-
     if (newPage === PageState.Review) {
       if (!wallet[0]) {
         setErrorMsg("The Wallet is not connected.")
-        return
-      }
-    } else {
-      if (!displayName) {
-        setErrorMsg("Display Name is mandatory to proceed.")
         return
       }
     }
@@ -88,6 +82,12 @@ export default function BrandingForm({realmAddress}: {realmAddress: string}) {
               <ChevronLeft className="inline-flex"/>
               {realm?.result?.name}
             </span>
+          </h4>
+          <h4 className="text-sm text-white mt-2 text-center">
+            {existingMetadata ?
+              "* Change the fields you want to update." :
+              "* All fields are optional — set only the ones you need."
+            }
           </h4>
           <div className="flex gap-2 w-full items-center text-sm font-medium mt-8">
             {pageStateTexts.map((state,index) => (
@@ -108,9 +108,11 @@ export default function BrandingForm({realmAddress}: {realmAddress: string}) {
       
       {
         pageState === PageState.Branding ?
-          <BrandingDetails handlePropertyChange={handlePropertyChange} handleProceedPage={handleProceedPage} errorMsg={errorMsg} /> :
+          <BrandingDetails handlePropertyChange={handlePropertyChange} handleProceedPage={handleProceedPage} 
+            errorMsg={errorMsg} realmAddress={realmAddress} /> :
         pageState === PageState.Socials ?
-          <SocialsDetails handleProceedPage={handleProceedPage} handlePropertyChange={handlePropertyChange} errorMsg={errorMsg} /> :
+          <SocialsDetails handleProceedPage={handleProceedPage} handlePropertyChange={handlePropertyChange} 
+            errorMsg={errorMsg} realmAddress={realmAddress} /> :
         pageState === PageState.Review ?
           <ReviewDetails metadata={metadata} realmAddress={realmAddress} connection={wallet[2]} wallet={wallet[0]!} handleProceedPage={handleProceedPage} /> :
           <FinalContent realmAddress={realmAddress} />

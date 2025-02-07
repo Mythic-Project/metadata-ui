@@ -5,10 +5,11 @@ import { useCreateMetadata } from "../hooks/useCreateMetadata"
 import { MetadataClient } from "../client"
 import { Connection } from "solana-web3js-v1"
 import { UiWalletAccount } from "@wallet-standard/react"
-import { useWalletAccountTransactionSendingSigner, useWalletAccountTransactionSigner } from "@solana/react"
+import { useWalletAccountTransactionSendingSigner } from "@solana/react"
 import clsx from "clsx"
 import Modal from 'react-modal';
 import { useGetRealmData } from "../hooks/useRealm"
+import { useGetMetadata } from "../hooks/useMetadata"
 
 export default function ReviewDetails(
   {realmAddress, metadata, wallet, connection, handleProceedPage}: 
@@ -22,8 +23,14 @@ export default function ReviewDetails(
 ) {
   const metadataItems = Object.entries(metadata)
   const sortedMetadataItems: [string, any][] = []
+  const existingMetadata = useGetMetadata(realmAddress).data
 
   for (const item of metadataItems) {
+    if (existingMetadata) {
+      if (existingMetadata[item[0]] === item[1]) {
+        continue
+      }
+    }
     if (item[0].includes('Image')) {
       sortedMetadataItems.unshift(item)
     } else {
@@ -116,7 +123,7 @@ export default function ReviewDetails(
           {createMetadataPending ? 'Sending Tx' : 'Create Metadata'}
         </button>
         <p className="text-xs text-[#727272] mt-4">
-          Make sure you have at least 0.01 SOL in your wallet.
+          Make sure you have at least 0.03 SOL in your wallet.
         </p>
         {createMetadataFailed && createMetadataError ?
           <div className="text-sm text-red-500 mt-4">
@@ -128,6 +135,7 @@ export default function ReviewDetails(
           isOpen={createMetadataPending}
           style={customStyles}
           contentLabel="Transaction Processing"
+          ariaHideApp={false}
         >
           <div className="p-4 text-center">
             <h3 className="text-lg font-semibold">Transacions are Processing</h3>

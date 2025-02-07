@@ -105,17 +105,17 @@ export default function MainForm(
                     ""
                 }
               </div>
-              <div className="mt-8 w-full justify-center flex md:justify-end">
-                <button 
-                  className={`${undefinedMetadata ? "bg-gray-500" : "bg-[#793AFF]"} rounded-md px-4 py-3 text-sm font-semibold`}
-                  onClick={handleCreate}
-                  disabled={undefinedMetadata}
-                >
-                  Create Metadata
-                </button>
-              </div>
             </div>
           }
+          <div className="mt-8 w-full justify-center flex md:justify-end">
+            <button 
+              className={`${undefinedMetadata ? "bg-gray-500" : "bg-[#793AFF]"} rounded-md px-4 py-3 text-sm font-semibold`}
+              onClick={handleCreate}
+              disabled={undefinedMetadata}
+            >
+              {metadata ? "Update Metadata" : "Create Metadata"}
+            </button>
+          </div>
         </div>
         {errorMsg !== "" &&
           <div className="text-sm text-red-500">

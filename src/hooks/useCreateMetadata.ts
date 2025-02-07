@@ -12,6 +12,7 @@ import { TransactionSendingSigner } from "@solana/web3.js"
 import {SplGovernance} from "governance-idl-sdk"
 import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL } from "solana-web3js-v1"
 import { useGetMetadataKeys } from "./useMetadataKeys"
+import { useGetMetadata } from "./useMetadata"
 
 export function useCreateMetadata(
   client: Program<MythicMetadata>,
@@ -26,6 +27,7 @@ export function useCreateMetadata(
   const [wallet,_,connection] = useSolanaWallet()
   const realmData = useGetRealmData(realmKey).data
   const metadataKeys = useGetMetadataKeys().data
+  const existingMetadata = useGetMetadata(realmKey).data
 
   return useMutation({
     mutationKey: ["create-metadata", {publicKey: wallet?.publicKey, realm: realmData?.result?.name}],
@@ -138,7 +140,7 @@ export function useCreateMetadata(
 
       // Create Proposal is the proposer DAO
       const proposerDaoProposalIx = await splGovernance.createProposalInstruction(
-        'Create Metadata for DAO',
+        `${existingMetadata ? 'Update' : 'Create'} Metadata for DAO`,
         '',
         {multiChoiceOptions: null, choiceType: "single"},
         ['Approve'],
@@ -220,7 +222,8 @@ export function useCreateMetadata(
       )
 
       // Create Metadata
-      const createMetadataIx = await client.methods
+      if (!existingMetadata) {
+        const createMetadataIx = await client.methods
         .createMetadata({
           subject: realmData.result.publicKey,
           updateAuthority: proposerTreasuryAccount,
@@ -233,11 +236,15 @@ export function useCreateMetadata(
         })
         .instruction()
 
-      metadataInstructions.push(createMetadataIx)
+        metadataInstructions.push(createMetadataIx)
+      }
 
       // Create Metadata Key for each item and append it to the metadata
       const metadataItems = Object.entries(metadata)
-      const filledMetadataItems = metadataItems.filter(item => !!item[1])
+      const filledMetadataItems = existingMetadata ?
+        metadataItems.filter(item => !!item[1]).filter(item => item[1] !== existingMetadata[item[0]]) :
+        metadataItems.filter(item => !!item[1])
+
       const keysForItems = filledMetadataItems.map(item => metadataKeys.find(k => k.name === item[0]))
       const values = filledMetadataItems.map(item => Buffer.from(item[1]))
       const remainingAccounts = keysForItems.map(key => ({
@@ -246,27 +253,45 @@ export function useCreateMetadata(
         isWritable: false
       }))
 
-      const chunkSize = 5
-      for (let j=0;j<filledMetadataItems.length;j+=chunkSize) {
-        const valuesChunk = values.slice(j,j+chunkSize)
-        const remainingAccountsChunk = remainingAccounts.slice(j, j+chunkSize)
-        
-        const appendItemIx = await client.methods
-          .appendMetadataItems({
-            value: valuesChunk
-          })
-          .accountsPartial({
-            payer: proposerTreasuryAccount,
-            issuingAuthority: proposerTreasuryAccount,
-            metadata: metadataAddress,
-            metadataMetadataKey,
-            collectionMetadataKey: metadataMetadataKey 
-          })
-          .remainingAccounts(remainingAccountsChunk)
-          .instruction()
+      if (existingMetadata) {
+        for (const [ix] of filledMetadataItems.entries()) {
+          const updateIx = await client.methods
+            .updateMetadataItem({newValue: values[ix]})
+            .accountsPartial({
+              metadata: metadataAddress,
+              metadataMetadataKey,
+              updateAuthority: proposerTreasuryAccount,
+              collectionMetadataKey: metadataMetadataKey,
+              itemMetadataKey: remainingAccounts[ix].pubkey
+            })
+            .instruction()
 
-        metadataInstructions.push(appendItemIx)
+          metadataInstructions.push(updateIx)
+        }
+      } else {
+        const chunkSize = 5
+        for (let j=0;j<filledMetadataItems.length;j+=chunkSize) {
+          const valuesChunk = values.slice(j,j+chunkSize)
+          const remainingAccountsChunk = remainingAccounts.slice(j, j+chunkSize)
+          
+          const appendItemIx = await client.methods
+            .appendMetadataItems({
+              value: valuesChunk
+            })
+            .accountsPartial({
+              payer: proposerTreasuryAccount,
+              issuingAuthority: proposerTreasuryAccount,
+              metadata: metadataAddress,
+              metadataMetadataKey,
+              collectionMetadataKey: metadataMetadataKey 
+            })
+            .remainingAccounts(remainingAccountsChunk)
+            .instruction()
+  
+          metadataInstructions.push(appendItemIx)
+        }
       }
+      
 
       const instructions = [proposerDaoProposalIx]
 
@@ -296,7 +321,7 @@ export function useCreateMetadata(
       const transferSolToDaoIx = SystemProgram.transfer({
         fromPubkey: walletAddress,
         toPubkey: proposerTreasuryAccount,
-        lamports: 0.01 * LAMPORTS_PER_SOL
+        lamports: existingMetadata ? 0.004 * LAMPORTS_PER_SOL : 0.007 * LAMPORTS_PER_SOL
       })
 
       instructions.push(signOffProposalIx, transferSolToDaoIx)
