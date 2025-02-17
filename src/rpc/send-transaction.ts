@@ -6,11 +6,10 @@ import {
   setTransactionMessageFeePayerSigner,
   appendTransactionMessageInstruction,
   appendTransactionMessageInstructions,
-  mainnet,
   sendAndConfirmTransactionFactory,
   signTransactionMessageWithSigners,
   createSolanaRpcSubscriptions,
-  TransactionSigner
+  TransactionSigner,
 } from "@solana/web3.js";
 import { TransactionInstruction } from "solana-web3js-v1";
 import { web1IxsToWeb2Ixs } from "./get-instructions";
@@ -23,9 +22,9 @@ export default async function broadcastTransaction(
   setTxExecuted: (n: number) => void,
   handleProceedPage: (s: PageState) => void
 ) {
-  const rpc = createSolanaRpc(mainnet(endpoint))
-  const subEndpoint = endpoint.replace('https', 'ws')
-  const rpcSubscriptions = createSolanaRpcSubscriptions(mainnet(subEndpoint))
+  const rpc = createSolanaRpc(endpoint)
+  const subEndpoint = endpoint.replace('https', 'ws')+'/'
+  const rpcSubscriptions = createSolanaRpcSubscriptions(subEndpoint)
   const sendAndConfirmTransaction = sendAndConfirmTransactionFactory({rpc, rpcSubscriptions})
 
   const v2Instructions = web1IxsToWeb2Ixs(instructions)
@@ -34,9 +33,10 @@ export default async function broadcastTransaction(
 
   for (let i = 0; i < v2Instructions.length-1; i++) {
     setTxExecuted(counter)
+
     const { value: latestBlockhash } = await rpc
-    .getLatestBlockhash({ commitment: "confirmed" })
-    .send();
+      .getLatestBlockhash({ commitment: "confirmed" })
+      .send();
 
     const message = 
       i === v2Instructions.length - 2 ?
@@ -55,7 +55,9 @@ export default async function broadcastTransaction(
 
     try {
       const signedTransaction = await signTransactionMessageWithSigners(message)
-      await sendAndConfirmTransaction(signedTransaction, {commitment: 'confirmed'})  
+      const tx: any = {...signedTransaction}
+      tx.lifetimeConstraint = message.lifetimeConstraint      
+      await sendAndConfirmTransaction(tx, {commitment: "confirmed"})  
     } catch(e) {
       console.log(e)
       throw new Error(e.message)
