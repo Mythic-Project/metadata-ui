@@ -5,7 +5,7 @@ import { useCreateMetadata } from "../hooks/useCreateMetadata"
 import { MetadataClient } from "../client"
 import { Connection } from "solana-web3js-v1"
 import { UiWalletAccount } from "@wallet-standard/react"
-import { useWalletAccountTransactionSendingSigner } from "@solana/react"
+import { useWalletAccountTransactionSigner } from "@solana/react"
 import clsx from "clsx"
 import Modal from 'react-modal';
 import { useGetRealmData } from "../hooks/useRealm"
@@ -39,7 +39,7 @@ export default function ReviewDetails(
   }
 
   const client = MetadataClient(connection as Connection)
-  const signer = useWalletAccountTransactionSendingSigner(wallet, 'solana:mainnet')
+  const signer = useWalletAccountTransactionSigner(wallet, 'solana:mainnet')
   const realmData = useGetRealmData(realmAddress).data
   const [isCouncil, setIsCouncil] = useState(false)
   const [txExecuted, setTxExecuted] = useState(0)

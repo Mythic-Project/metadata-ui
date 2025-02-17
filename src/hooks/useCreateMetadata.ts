@@ -8,17 +8,17 @@ import { MetadataItems, PageState } from "../branding-form"
 import { TransactionInstruction } from "solana-web3js-v1"
 import { useGetRealmData } from "./useRealm"
 import broadcastTransaction from "../rpc/send-transaction"
-import { TransactionSendingSigner } from "@solana/web3.js"
 import {SplGovernance} from "governance-idl-sdk"
 import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL } from "solana-web3js-v1"
 import { useGetMetadataKeys } from "./useMetadataKeys"
 import { useGetMetadata } from "./useMetadata"
+import { TransactionSigner } from "@solana/web3.js"
 
 export function useCreateMetadata(
   client: Program<MythicMetadata>,
   realmKey: string,
   metadata: MetadataItems,
-  signer: TransactionSendingSigner,
+  signer: TransactionSigner,
   isCouncil: boolean,
   setTxExecuted: (n: number) => void,
   setTotalTxs: (m: number) => void,

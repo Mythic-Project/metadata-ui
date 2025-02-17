@@ -4,11 +4,13 @@ import {
   pipe, 
   setTransactionMessageLifetimeUsingBlockhash, 
   setTransactionMessageFeePayerSigner,
-  signAndSendTransactionMessageWithSigners,
   appendTransactionMessageInstruction,
-  TransactionSendingSigner,
   appendTransactionMessageInstructions,
-  mainnet
+  mainnet,
+  sendAndConfirmTransactionFactory,
+  signTransactionMessageWithSigners,
+  createSolanaRpcSubscriptions,
+  TransactionSigner
 } from "@solana/web3.js";
 import { TransactionInstruction } from "solana-web3js-v1";
 import { web1IxsToWeb2Ixs } from "./get-instructions";
@@ -17,11 +19,15 @@ import { PageState } from "../branding-form";
 export default async function broadcastTransaction(
   instructions: TransactionInstruction[],
   endpoint: string,
-  signer: TransactionSendingSigner,
+  signer: TransactionSigner,
   setTxExecuted: (n: number) => void,
   handleProceedPage: (s: PageState) => void
 ) {
   const rpc = createSolanaRpc(mainnet(endpoint))
+  const subEndpoint = endpoint.replace('https', 'ws')
+  const rpcSubscriptions = createSolanaRpcSubscriptions(mainnet(subEndpoint))
+  const sendAndConfirmTransaction = sendAndConfirmTransactionFactory({rpc, rpcSubscriptions})
+
   const v2Instructions = web1IxsToWeb2Ixs(instructions)
 
   let counter = 1
@@ -48,13 +54,11 @@ export default async function broadcastTransaction(
         )
 
     try {
-      const signedTransaction = await signAndSendTransactionMessageWithSigners(message)
-      console.log(signedTransaction)
-      // const sendAndConfirmTransaction = sendTransactionWithoutConfirmingFactory({rpc})
-      // await sendAndConfirmTransaction(signedTransaction, {commitment: 'processed'})  
+      const signedTransaction = await signTransactionMessageWithSigners(message)
+      await sendAndConfirmTransaction(signedTransaction, {commitment: 'confirmed'})  
     } catch(e) {
       console.log(e)
-      throw new Error(e)
+      throw new Error(e.message)
     }
     
     counter++
