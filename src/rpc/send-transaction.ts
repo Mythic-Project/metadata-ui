@@ -23,7 +23,7 @@ export default async function broadcastTransaction(
   handleProceedPage: (s: PageState) => void
 ) {
   const rpc = createSolanaRpc(endpoint)
-  const subEndpoint = endpoint.replace('https', 'ws')+'/'
+  const subEndpoint = endpoint.replace('https', 'wss')+'/'
   const rpcSubscriptions = createSolanaRpcSubscriptions(subEndpoint)
   const sendAndConfirmTransaction = sendAndConfirmTransactionFactory({rpc, rpcSubscriptions})
 
