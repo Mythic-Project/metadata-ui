@@ -11,7 +11,7 @@ import broadcastTransaction from "../rpc/send-transaction"
 import {SplGovernance} from "governance-idl-sdk"
 import { PublicKey, Keypair, SystemProgram, LAMPORTS_PER_SOL } from "solana-web3js-v1"
 import { useGetMetadataKeys } from "./useMetadataKeys"
-import { useGetMetadata } from "./useMetadata"
+import { useGetMetadata, useGetSetKeys } from "./useMetadata"
 import { TransactionSigner } from "@solana/web3.js"
 
 export function useCreateMetadata(
@@ -28,6 +28,7 @@ export function useCreateMetadata(
   const realmData = useGetRealmData(realmKey).data
   const metadataKeys = useGetMetadataKeys().data
   const existingMetadata = useGetMetadata(realmKey).data
+  const keysSet = useGetSetKeys(realmKey).data
 
   return useMutation({
     mutationKey: ["create-metadata", {publicKey: wallet?.publicKey, realm: realmData?.result?.name}],
@@ -250,12 +251,16 @@ export function useCreateMetadata(
       const remainingAccounts = keysForItems.map(key => ({
         pubkey: getMetadataKey(key!.id),
         isSigner: false,
-        isWritable: false
+        isWritable: false,
+        id: key!.id
       }))
 
       if (existingMetadata) {
         for (const [ix] of filledMetadataItems.entries()) {
-          const updateIx = await client.methods
+          const doesKeyExist = keysSet?.map(k => k.toNumber()).includes(remainingAccounts[ix].id.toNumber())
+          
+          if (doesKeyExist) {
+            const updateIx = await client.methods
             .updateMetadataItem({newValue: values[ix]})
             .accountsPartial({
               metadata: metadataAddress,
@@ -266,7 +271,25 @@ export function useCreateMetadata(
             })
             .instruction()
 
-          metadataInstructions.push(updateIx)
+            metadataInstructions.push(updateIx)
+          } else {
+            const appendIx = await client.methods
+            .appendMetadataItem({
+              value: values[ix]
+            })
+            .accountsPartial({
+              payer: proposerTreasuryAccount,
+              issuingAuthority: proposerTreasuryAccount,
+              metadata: metadataAddress,
+              metadataMetadataKey,
+              collectionMetadataKey: metadataMetadataKey,
+              itemMetadataKey: remainingAccounts[ix].pubkey
+            })
+            .instruction()
+
+            metadataInstructions.push(appendIx)
+          }
+          
         }
       } else {
         const chunkSize = 5

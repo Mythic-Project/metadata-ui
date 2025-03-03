@@ -1,4 +1,4 @@
-import { CircleCheck, CircleCheckBig } from "lucide-react"
+import { CircleCheckBig } from "lucide-react"
 import React from "react"
 
 export default function FinalContent({realmAddress}: {realmAddress: string}) {
