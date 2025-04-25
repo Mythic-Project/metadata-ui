@@ -20,6 +20,7 @@ export function useCreateMetadata(
   metadata: MetadataItems,
   signer: TransactionSigner,
   isCouncil: boolean,
+  setIsDaoOwner: (isDaoOwner: boolean) => void,
   setTxExecuted: (n: number) => void,
   setTotalTxs: (m: number) => void,
   handleProceedPage: (s: PageState) => void
@@ -41,7 +42,7 @@ export function useCreateMetadata(
         throw new Error("Unable to find the realm.")
       }
 
-      if (!realmData.result?.authority || !realmData.governance) {
+      if (!realmData.result?.authority || (!realmData.owner && !realmData.governance)) {
         throw new Error("This DAO does not have any authority.")
       }
 
@@ -54,15 +55,146 @@ export function useCreateMetadata(
       }
 
       const walletAddress = new PublicKey(wallet.address)
-      const splGovernance = new SplGovernance(connection)
+      const splGovernance = new SplGovernance(connection, realmData.owner)
       const isCouncilExist = realmData.result.config.councilMint !== null
       const votingMint = isCouncil ? 
         realmData.result.config.councilMint! :
         realmData.result.communityMint
 
       // Fetch Governance account (it is assumed that the realm authority is the governance address)
-      const governanceAccount = realmData.governance
+      const governanceAccount = realmData.governance!
+
+      const proposerTreasuryAccount = realmData.systemOwner ?
+        walletAddress :
+        splGovernance
+          .pda.nativeTreasuryAccount({governanceAccount: governanceAccount.publicKey})
+          .publicKey
+        
+
+      // Metadata Instructions
+      const metadataInstructions: TransactionInstruction[] = []
       
+      const metadataMetadataKey = getMetadataKey(metadataKeys.find(y => y.label === "Metadata")!.id)
+      
+      const metadataAddress = getMetadata(
+        metadataMetadataKey, 
+        proposerTreasuryAccount, 
+        realmData.result.publicKey
+      )
+
+      // Create Metadata
+      if (!existingMetadata) {
+        const createMetadataIx = await client.methods
+        .createMetadata({
+          subject: realmData.result.publicKey,
+          updateAuthority: proposerTreasuryAccount,
+        })
+        .accountsPartial({
+          issuingAuthority: proposerTreasuryAccount,
+          metadata: metadataAddress,
+          metadataMetadataKey,
+          payer: proposerTreasuryAccount
+        })
+        .instruction()
+
+        metadataInstructions.push(createMetadataIx)
+      }
+
+      // Create Metadata Key for each item and append it to the metadata
+      const metadataItems = Object.entries(metadata)
+      const filledMetadataItems = existingMetadata ?
+        metadataItems.filter(item => !!item[1]).filter(item => item[1] !== existingMetadata[item[0]]) :
+        metadataItems.filter(item => !!item[1])
+
+      const keysForItems = filledMetadataItems.map(item => metadataKeys.find(k => k.name === item[0]))
+      const values = filledMetadataItems.map(item => Buffer.from(item[1]))
+      const remainingAccounts = keysForItems.map(key => ({
+        pubkey: getMetadataKey(key!.id),
+        isSigner: false,
+        isWritable: false,
+        id: key!.id
+      }))
+
+      if (existingMetadata) {
+        for (const [ix] of filledMetadataItems.entries()) {
+          const doesKeyExist = keysSet?.map(k => k.toNumber()).includes(remainingAccounts[ix].id.toNumber())
+          
+          if (doesKeyExist) {
+            const updateIx = await client.methods
+            .updateMetadataItem({newValue: values[ix]})
+            .accountsPartial({
+              metadata: metadataAddress,
+              metadataMetadataKey,
+              updateAuthority: proposerTreasuryAccount,
+              collectionMetadataKey: metadataMetadataKey,
+              itemMetadataKey: remainingAccounts[ix].pubkey
+            })
+            .instruction()
+
+            metadataInstructions.push(updateIx)
+          } else {
+            const appendIx = await client.methods
+            .appendMetadataItem({
+              value: values[ix]
+            })
+            .accountsPartial({
+              payer: proposerTreasuryAccount,
+              issuingAuthority: proposerTreasuryAccount,
+              metadata: metadataAddress,
+              metadataMetadataKey,
+              collectionMetadataKey: metadataMetadataKey,
+              itemMetadataKey: remainingAccounts[ix].pubkey
+            })
+            .instruction()
+
+            metadataInstructions.push(appendIx)
+          }
+        }
+      } else {
+        const chunkSize = 5
+        for (let j=0;j<filledMetadataItems.length;j+=chunkSize) {
+          const valuesChunk = values.slice(j,j+chunkSize)
+          const remainingAccountsChunk = remainingAccounts.slice(j, j+chunkSize)
+          
+          const appendItemIx = await client.methods
+            .appendMetadataItems({
+              value: valuesChunk
+            })
+            .accountsPartial({
+              payer: proposerTreasuryAccount,
+              issuingAuthority: proposerTreasuryAccount,
+              metadata: metadataAddress,
+              metadataMetadataKey,
+              collectionMetadataKey: metadataMetadataKey 
+            })
+            .remainingAccounts(remainingAccountsChunk)
+            .instruction()
+  
+          metadataInstructions.push(appendItemIx)
+        }
+      }
+      
+      if (realmData.systemOwner) {
+        // Create the metadata without proposal
+        if (!walletAddress.equals(realmData.result.authority)) {
+          throw new Error('Incorrect Owner for the Realm.')
+        }
+
+        setTotalTxs(metadataInstructions.length - 1)
+        await broadcastTransaction(
+          metadataInstructions,
+          connection.rpcEndpoint,
+          signer,
+          setTxExecuted,
+          handleProceedPage
+        )
+
+        return;
+      }
+      
+      // Check if the DAO owns the proposal
+      setIsDaoOwner(true)
+
       // Fetch Realm Config account to check if plugin is used
       const realmConfigAccount = await splGovernance.getRealmConfigByRealm(realmData.result.publicKey)
       const vwrProgram = realmConfigAccount.communityTokenConfig.voterWeightAddin
@@ -162,9 +294,6 @@ export function useCreateMetadata(
       // // Insert Instructions for the Proposer DAO Proposal
       // const proposerDaoInnerIxs: TransactionInstruction[] = []
 
-      const proposerTreasuryAccount = splGovernance
-        .pda.nativeTreasuryAccount({governanceAccount: governanceAccount.publicKey})
-        .publicKey
       // // Proposer's ATA Account
       // const proposerAtaAddress = utils.token.associatedAddress({
       //   mint: approvalRealmMint, 
@@ -210,111 +339,6 @@ export function useCreateMetadata(
       //   toPubkey: approvalRealmTreasury,
       //   lamports: 0.005 * LAMPORTS_PER_SOL
       // })
-
-      // Metadata Instructions
-      const metadataInstructions: TransactionInstruction[] = []
-      
-      const metadataMetadataKey = getMetadataKey(metadataKeys.find(y => y.label === "Metadata")!.id)
-      
-      const metadataAddress = getMetadata(
-        metadataMetadataKey, 
-        proposerTreasuryAccount, 
-        realmData.result.publicKey
-      )
-
-      // Create Metadata
-      if (!existingMetadata) {
-        const createMetadataIx = await client.methods
-        .createMetadata({
-          subject: realmData.result.publicKey,
-          updateAuthority: proposerTreasuryAccount,
-        })
-        .accountsPartial({
-          issuingAuthority: proposerTreasuryAccount,
-          metadata: metadataAddress,
-          metadataMetadataKey,
-          payer: proposerTreasuryAccount
-        })
-        .instruction()
-
-        metadataInstructions.push(createMetadataIx)
-      }
-
-      // Create Metadata Key for each item and append it to the metadata
-      const metadataItems = Object.entries(metadata)
-      const filledMetadataItems = existingMetadata ?
-        metadataItems.filter(item => !!item[1]).filter(item => item[1] !== existingMetadata[item[0]]) :
-        metadataItems.filter(item => !!item[1])
-
-      const keysForItems = filledMetadataItems.map(item => metadataKeys.find(k => k.name === item[0]))
-      const values = filledMetadataItems.map(item => Buffer.from(item[1]))
-      const remainingAccounts = keysForItems.map(key => ({
-        pubkey: getMetadataKey(key!.id),
-        isSigner: false,
-        isWritable: false,
-        id: key!.id
-      }))
-
-      if (existingMetadata) {
-        for (const [ix] of filledMetadataItems.entries()) {
-          const doesKeyExist = keysSet?.map(k => k.toNumber()).includes(remainingAccounts[ix].id.toNumber())
-          
-          if (doesKeyExist) {
-            const updateIx = await client.methods
-            .updateMetadataItem({newValue: values[ix]})
-            .accountsPartial({
-              metadata: metadataAddress,
-              metadataMetadataKey,
-              updateAuthority: proposerTreasuryAccount,
-              collectionMetadataKey: metadataMetadataKey,
-              itemMetadataKey: remainingAccounts[ix].pubkey
-            })
-            .instruction()
-
-            metadataInstructions.push(updateIx)
-          } else {
-            const appendIx = await client.methods
-            .appendMetadataItem({
-              value: values[ix]
-            })
-            .accountsPartial({
-              payer: proposerTreasuryAccount,
-              issuingAuthority: proposerTreasuryAccount,
-              metadata: metadataAddress,
-              metadataMetadataKey,
-              collectionMetadataKey: metadataMetadataKey,
-              itemMetadataKey: remainingAccounts[ix].pubkey
-            })
-            .instruction()
-
-            metadataInstructions.push(appendIx)
-          }
-          
-        }
-      } else {
-        const chunkSize = 5
-        for (let j=0;j<filledMetadataItems.length;j+=chunkSize) {
-          const valuesChunk = values.slice(j,j+chunkSize)
-          const remainingAccountsChunk = remainingAccounts.slice(j, j+chunkSize)
-          
-          const appendItemIx = await client.methods
-            .appendMetadataItems({
-              value: valuesChunk
-            })
-            .accountsPartial({
-              payer: proposerTreasuryAccount,
-              issuingAuthority: proposerTreasuryAccount,
-              metadata: metadataAddress,
-              metadataMetadataKey,
-              collectionMetadataKey: metadataMetadataKey 
-            })
-            .remainingAccounts(remainingAccountsChunk)
-            .instruction()
-  
-          metadataInstructions.push(appendItemIx)
-        }
-      }
-      
 
       const instructions = [proposerDaoProposalIx]
 

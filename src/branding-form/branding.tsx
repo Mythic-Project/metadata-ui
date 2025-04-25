@@ -24,6 +24,10 @@ export default function BrandingDetails(
       {/* <InputItem label="Symbol" type="input" placeholder="A unique identification" 
         onChange={(e) => handlePropertyChange('symbol', e)} 
       /> */}
+      <p className="text-sm text-red-500">
+        The image link is limited to 100 characters. Incomplete links will not work. 
+        Please use a link shortener if needed.
+      </p>
       <InputItem label="DAO Image" type="input" placeholder="Post the image link here." 
         onChange={(e) => handlePropertyChange('daoImage', e)} maxLength={100}
         defaultValue={metadata?.daoImage}

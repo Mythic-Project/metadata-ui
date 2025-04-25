@@ -12,11 +12,12 @@ import { useGetRealmData } from "../hooks/useRealm"
 import { useGetMetadata } from "../hooks/useMetadata"
 
 export default function ReviewDetails(
-  {realmAddress, metadata, wallet, connection, handleProceedPage}: 
+  {realmAddress, metadata, wallet, setIsDaoOwner, connection, handleProceedPage}: 
   {
     realmAddress: string, 
     metadata: MetadataItems,
     wallet: UiWalletAccount,
+    setIsDaoOwner: (isDaoOwner: boolean) => void,
     handleProceedPage: (s: PageState) => void,
     connection: Connection | undefined
   }
@@ -56,6 +57,7 @@ export default function ReviewDetails(
     metadata, 
     signer, 
     isCouncil, 
+    setIsDaoOwner,
     setTxExecuted, 
     setTotalTxs,
     handleProceedPage
@@ -80,7 +82,7 @@ export default function ReviewDetails(
         
       </div>
       <div className="mt-2">
-        <div className="mb-8">
+        {!realmData?.systemOwner && <div className="mb-8">
           <h3 className="text-sm font-semibold mb-4">Choose the proposal type</h3>
           {
             !realmData?.governance?.config.communityVoteThreshold.disabled &&
@@ -110,7 +112,7 @@ export default function ReviewDetails(
               <label htmlFor="council_option" className="p-2">Council</label>
             </div>
           }
-        </div>
+        </div>}
         <button 
           className={clsx({
             "bg-[#793AFF]": !createMetadataPending,
@@ -138,7 +140,7 @@ export default function ReviewDetails(
           ariaHideApp={false}
         >
           <div className="p-4 text-center">
-            <h3 className="text-lg font-semibold">Transacions are Processing</h3>
+            <h3 className="text-lg font-semibold">Transactions are Processing</h3>
             <p className="font-medium">
               Currently processing {txExecuted} out of {totalTxs}
             </p>

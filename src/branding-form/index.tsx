@@ -34,6 +34,7 @@ const pageStateTexts = ["Branding", "Socials", "Review"]
 
 export default function BrandingForm({realmAddress}: {realmAddress: string}) {
   const [pageState, setPageState] = useState<PageState>(PageState.Branding)
+  const [isDaoOwner, setIsDaoOwner] = useState(false)
   const [metadata, setMetadata] = useState<MetadataItems>({
     // symbol: "cv",
     displayName: "",
@@ -114,8 +115,11 @@ export default function BrandingForm({realmAddress}: {realmAddress: string}) {
           <SocialsDetails handleProceedPage={handleProceedPage} handlePropertyChange={handlePropertyChange} 
             errorMsg={errorMsg} realmAddress={realmAddress} /> :
         pageState === PageState.Review ?
-          <ReviewDetails metadata={metadata} realmAddress={realmAddress} connection={wallet[2]} wallet={wallet[0]!} handleProceedPage={handleProceedPage} /> :
-          <FinalContent realmAddress={realmAddress} />
+          <ReviewDetails 
+            metadata={metadata} realmAddress={realmAddress} connection={wallet[2]} 
+            wallet={wallet[0]!} handleProceedPage={handleProceedPage} setIsDaoOwner={setIsDaoOwner}
+          /> :
+          <FinalContent realmAddress={realmAddress} isDaoOwner={isDaoOwner} />
       }
     </div>
   )

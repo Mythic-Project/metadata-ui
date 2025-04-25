@@ -1,4 +1,4 @@
-import { Connection } from "solana-web3js-v1";
+import { Connection, PublicKey } from "solana-web3js-v1";
 import { useSolanaWallet } from "../providers/wallet-provider";
 import { useQuery } from "@tanstack/react-query";
 import { MetadataClient, getMetadata, getMetadataKey } from "../client";
@@ -15,7 +15,6 @@ export function useGetMetadata(realmAddress: string) {
   const wallet = useSolanaWallet()
   const connection = wallet[2] as Connection
   const client = MetadataClient(connection)
-  const splGovernance = new SplGovernance(connection)
   const realmData = useGetRealmData(realmAddress).data
   const metadataKeys = useGetMetadataKeys().data
 
@@ -30,6 +29,14 @@ export function useGetMetadata(realmAddress: string) {
       if (!realmData.result.authority) {
         return null
       }
+
+      const realmInfo = await connection.getAccountInfo(new PublicKey(realmAddress))
+
+      if (!realmInfo) {
+        return null
+      }
+
+      const splGovernance = new SplGovernance(connection, realmInfo.owner)
 
       try {
         const metadataMetadataKey = getMetadataKey(metadataKeys.find(y => y.label === "Metadata")!.id)
