@@ -30,8 +30,12 @@ export default async function broadcastTransaction(
   const v2Instructions = web1IxsToWeb2Ixs(instructions)
 
   let counter = 1
+  
+  const isPlugin = 
+    v2Instructions.length && v2Instructions[0].data && 
+    v2Instructions[0].data[0] === 0x2d && v2Instructions[0].data[1] === 0xb9
 
-  for (let i = 0; i < v2Instructions.length-1; i++) {
+  for (let i = 0; i < v2Instructions.length-1; i+=2) {
     setTxExecuted(counter)
 
     const { value: latestBlockhash } = await rpc
@@ -39,7 +43,7 @@ export default async function broadcastTransaction(
       .send();
 
     const message = 
-      i === v2Instructions.length - 2 ?
+      i === v2Instructions.length - 2 || isPlugin ?
         pipe(
           createTransactionMessage({version: 0}),
           m => setTransactionMessageFeePayerSigner(signer, m),
@@ -51,6 +55,12 @@ export default async function broadcastTransaction(
           m => setTransactionMessageFeePayerSigner(signer, m),
           m => setTransactionMessageLifetimeUsingBlockhash(latestBlockhash, m),
           m => appendTransactionMessageInstruction(v2Instructions[i], m)
+        )
+        pipe(
+          createTransactionMessage({ version: 0 }),
+          m => setTransactionMessageFeePayerSigner(signer, m),
+          m => setTransactionMessageLifetimeUsingBlockhash(latestBlockhash, m),
+          m => appendTransactionMessageInstruction(v2Instructions[i+1], m)
         )
 
     try {

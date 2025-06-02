@@ -213,7 +213,35 @@ export function useCreateMetadata(
         ], vwrProgram)[0]
         : null
 
-      // Pending add support for VSR Plugin
+      const voter = vwrProgram && registrarAddress ?
+        PublicKey.findProgramAddressSync([
+          registrarAddress.toBuffer(),
+          Buffer.from("voter"),
+          walletAddress.toBuffer()
+        ], vwrProgram)[0]
+        : null
+
+      const vsrUpdateInstruction = vwrAddress && registrarAddress && voter ?
+        {
+          programId: vwrProgram,
+          data: Buffer.from([
+            45,
+            185,
+            3,
+            36,
+            109,
+            190,
+            115,
+            169
+          ]),
+          keys: [
+            {pubkey: registrarAddress, isSigner: false, isWritable: false},
+            {pubkey: voter, isSigner: false, isWritable: false},
+            {pubkey: vwrAddress, isSigner: false, isWritable: true},
+            {pubkey: SystemProgram.programId, isSigner: false, isWritable: false}
+          ]
+        } :
+        null
 
       const councilTokenOwnerRecord = isCouncilExist ?
         splGovernance.pda.tokenOwnerRecordAccount({
@@ -340,7 +368,9 @@ export function useCreateMetadata(
       //   lamports: 0.005 * LAMPORTS_PER_SOL
       // })
 
-      const instructions = [proposerDaoProposalIx]
+      const instructions = vsrUpdateInstruction ? 
+        [vsrUpdateInstruction, proposerDaoProposalIx] :
+        [proposerDaoProposalIx]
 
       for (let i = 0; i<metadataInstructions.length; i++) {
         const insertIx = await splGovernance.insertTransactionInstruction(
@@ -412,7 +442,7 @@ export function useCreateMetadata(
       //   instructions.push(innerIx)
       // }
 
-      setTotalTxs(instructions.length - 1)
+      setTotalTxs(vsrUpdateInstruction ? instructions.length - 2 : instructions.length - 1)
       await broadcastTransaction(
         instructions,
         connection.rpcEndpoint,
