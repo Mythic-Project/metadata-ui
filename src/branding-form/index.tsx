@@ -56,12 +56,18 @@ export default function BrandingForm({realmAddress}: {realmAddress: string}) {
 
   function handlePropertyChange(propertyName: string, newValue: string) {
     setErrorMsg("")
+    if (newValue.length > 100 && (propertyName === "daoImage" || propertyName === "bannerImage")) {
+      setErrorMsg(`Image Link length: ${newValue.length}. The image link is limited to 100 characters. Incomplete links will not work. Please use a link shortener if needed.`)
+      return
+    }
     const newMetadata = {...metadata}
     newMetadata[propertyName] = newValue
     setMetadata(newMetadata)
   }
 
   function handleProceedPage(newPage: PageState) {
+    if (errorMsg) return
+
     if (newPage === PageState.Review) {
       if (!wallet[0]) {
         setErrorMsg("The Wallet is not connected.")
