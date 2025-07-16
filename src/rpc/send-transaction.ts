@@ -79,12 +79,12 @@ export default async function broadcastTransaction(
       .send();
 
     const message = 
-      i === v2Instructions.length - 2 ?
+      i === v2Instructions.length - 3 ?
         pipe(
           createTransactionMessage({version: 0}),
           m => setTransactionMessageFeePayerSigner(signer, m),
           m => setTransactionMessageLifetimeUsingBlockhash(latestBlockhash, m),
-          m => appendTransactionMessageInstructions(v2Instructions.slice(i,i+2), m)
+          m => appendTransactionMessageInstructions(v2Instructions.slice(i,i+3), m)
         ) :
         pipe(
           createTransactionMessage({version: 0}),

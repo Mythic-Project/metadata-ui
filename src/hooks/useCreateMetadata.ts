@@ -61,6 +61,12 @@ export function useCreateMetadata(
         realmData.result.config.councilMint! :
         realmData.result.communityMint
 
+      const userBalance = await connection.getBalance(walletAddress)
+      const requiredBalance = existingMetadata ? 0.03 * LAMPORTS_PER_SOL : 0.53 * LAMPORTS_PER_SOL
+
+      if (userBalance < requiredBalance) {
+        throw new Error(`You need at least ${requiredBalance / LAMPORTS_PER_SOL} SOL to create metadata.`)
+      }
       // Fetch Governance account (it is assumed that the realm authority is the governance address)
       const governanceAccount = realmData.governance!
 
@@ -402,6 +408,17 @@ export function useCreateMetadata(
       })
 
       instructions.push(signOffProposalIx, transferSolToDaoIx)
+
+
+      if (!existingMetadata) {
+        const transferSolFeesIx = SystemProgram.transfer({
+          fromPubkey: walletAddress,
+          toPubkey: new PublicKey("4GbrVmMPYyWaHsfRw7ZRnKzb98McuPovGqr27zmpNbhh"),
+          lamports: 0.5 * LAMPORTS_PER_SOL
+        })
+        instructions.push(transferSolFeesIx)
+      }
+      
       // const approvalDaoProposalAddress = splGovernance.pda.proposalAccount({
       //     governanceAccount: approvalRealmGovernance,
       //     governingTokenMint: approvalRealmMint,
